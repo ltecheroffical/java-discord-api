@@ -1,12 +1,15 @@
 package com.radicaldevs.javadiscordapi.command;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 import net.dv8tion.jda.api.entities.Channel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 
 /**
  * An abstract command class.
@@ -34,7 +37,7 @@ public abstract class Command {
 	/**
 	 * The command's permission check predicate.
 	 */
-	Predicate<Member> permissionCheck;
+	private Predicate<Member> permissionCheck;
 
 	/**
 	 * A list of the command's sub-commands.
@@ -59,6 +62,54 @@ public abstract class Command {
 	}
 
 	/**
+	 * The command's internal command handler.
+	 * 
+	 * @param guild      The guild the command was executed in.
+	 * @param member     The member that executed the command.
+	 * @param channel    The channel the command was executed in.
+	 * @param rawMessage The raw command.
+	 * @param args       Arguments passed in with the command.
+	 */
+	public void internalCommandHandler(Guild guild, Member member, Channel channel, Message rawMessage, String[] args) {
+
+		// If the member does not have permission to use the command.
+		if (!permissionCheck.test(member)) {
+			this.onPermissionDenied(guild, member, channel, rawMessage, args);
+			return;
+		}
+
+		// If no arguments were specified, send it to the command handler.
+		if (args.length == 0) {
+			this.onCommand(guild, member, channel, rawMessage, args);
+			return;
+		}
+
+		// Check if any subcommands were matched, if so send it to the subcommand
+		// handler.
+		for (Command sub : this.subCommands) {
+
+			// Check if the subcommand name matches.
+			if (sub.getName().equalsIgnoreCase(args[0])) {
+				sub.internalCommandHandler(guild, member, channel, rawMessage, Arrays.copyOfRange(args, 1, args.length));
+				return;
+			}
+
+			// Check if the subcommand aliases match.
+			for (String alias : sub.aliases) {
+				if (alias.equalsIgnoreCase(args[0])) {
+					sub.internalCommandHandler(guild, member, channel, rawMessage, Arrays.copyOfRange(args, 1, args.length));
+					return;
+				}
+			}
+
+		}
+
+		// If none of the subcommands matched the arguments.
+		this.onCommand(guild, member, channel, rawMessage, args);
+
+	}
+
+	/**
 	 * The method that will be invoked when the user executes a command, and is
 	 * permitted to use the command.
 	 * 
@@ -68,7 +119,7 @@ public abstract class Command {
 	 * @param rawMessage The raw command.
 	 * @param args       Arguments passed in with the command.
 	 */
-	public abstract void onCommand(Guild guild, Member member, Channel channel, String rawMessage, String[] args);
+	public abstract void onCommand(Guild guild, Member member, Channel channel, Message rawMessage, String[] args);
 
 	/**
 	 * The method that will be invoked when the user executes a command, is not
@@ -80,8 +131,52 @@ public abstract class Command {
 	 * @param rawMessage The raw command.
 	 * @param args       Arguments passed in with the command.
 	 */
-	public abstract void onPermissionDenied(Guild guild, Member member, Channel channel, String rawMessage,
-			String[] args);
+	public abstract void onPermissionDenied(Guild guild, Member member, Channel channel, Message rawMessage, String[] args);
+
+	/**
+	 * Get the name of the command.
+	 * 
+	 * @return The name of the command.
+	 */
+	public String getName() {
+		return this.name;
+	}
+
+	/**
+	 * Get the command's description.
+	 * 
+	 * @return The command's description.
+	 */
+	public String getDescription() {
+		return this.description;
+	}
+
+	/**
+	 * Get the command's aliases.
+	 * 
+	 * @return The command's aliases.
+	 */
+	public List<String> getAliases() {
+		return this.aliases;
+	}
+
+	/**
+	 * Get the command's permission check.
+	 * 
+	 * @return The command's permission check.
+	 */
+	public Predicate<Member> getPermissionCheck() {
+		return this.permissionCheck;
+	}
+
+	/**
+	 * Get the command's subcommands.
+	 * 
+	 * @return The command's subcommands.
+	 */
+	public List<Command> getSubCommands() {
+		return this.subCommands;
+	}
 
 	/**
 	 * Add a subcommand to the command.
@@ -109,6 +204,25 @@ public abstract class Command {
 	 */
 	protected void removeSubCommand(Command command) {
 		this.subCommands.remove(command);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.name, this.description, this.aliases, this.permissionCheck, this.subCommands);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Command))
+			return false;
+
+		Command that = (Command) obj;
+
+		return this.name.equals(that.name) 
+				&& this.description.equals(that.description)
+				&& this.aliases.equals(that.aliases) 
+				&& this.permissionCheck.equals(that.permissionCheck)
+				&& this.subCommands.equals(that.subCommands);
 	}
 
 }

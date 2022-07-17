@@ -3,6 +3,8 @@ package com.radicaldevs.javadiscordapi;
 import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
 
+import com.radicaldevs.javadiscordapi.command.CommandManager;
+
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
@@ -26,12 +28,18 @@ public abstract class Bot {
 	private JDA api;
 
 	/**
+	 * The bot's command manager.
+	 */
+	private CommandManager commandManager;
+
+	/**
 	 * Construct a new bot.
 	 * 
 	 * @param token The bot's token.
 	 */
 	public Bot(@Nonnull String token) {
 		this.token = token;
+		this.commandManager = new CommandManager();
 	}
 
 	/**
@@ -45,6 +53,15 @@ public abstract class Bot {
 	 */
 	public JDA getAPI() {
 		return this.api;
+	}
+
+	/**
+	 * Get the bot's command manager.
+	 * 
+	 * @return The bot's command manager.
+	 */
+	public CommandManager getCommandManager() {
+		return this.commandManager;
 	}
 
 	/**

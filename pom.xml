@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.radicaldevs</groupId>
 	<artifactId>java-discord-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<name>Java Discord API</name>
 	<description>A discord API that extends JDA, to add additional features.</description>
 	<repositories>
