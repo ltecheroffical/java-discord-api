@@ -119,7 +119,7 @@ public abstract class Command {
 	 * @param rawMessage The raw command.
 	 * @param args       Arguments passed in with the command.
 	 */
-	public abstract void onCommand(Guild guild, Member member, Channel channel, Message rawMessage, String[] args);
+	public abstract boolean onCommand(Guild guild, Member member, Channel channel, Message rawMessage, String[] args);
 
 	/**
 	 * The method that will be invoked when the user executes a command, is not
@@ -131,7 +131,7 @@ public abstract class Command {
 	 * @param rawMessage The raw command.
 	 * @param args       Arguments passed in with the command.
 	 */
-	public abstract void onPermissionDenied(Guild guild, Member member, Channel channel, Message rawMessage, String[] args);
+	public abstract boolean onPermissionDenied(Guild guild, Member member, Channel channel, Message rawMessage, String[] args);
 
 	/**
 	 * Get the name of the command.

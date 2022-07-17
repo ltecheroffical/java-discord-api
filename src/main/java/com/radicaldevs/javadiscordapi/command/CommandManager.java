@@ -69,5 +69,5 @@ public class CommandManager {
 	public void removeCommand(Command command) {
 		this.commands.remove(command);
 	}
-
+	
 }

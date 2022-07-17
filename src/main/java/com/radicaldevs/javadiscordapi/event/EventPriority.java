@@ -7,21 +7,11 @@ package com.radicaldevs.javadiscordapi.event;
  * @since 0.0.2
  */
 public enum EventPriority {
-
+	
 	/**
-	 * The lowest event priority.
+	 * The highest event priority.
 	 */
-	LOWST,
-
-	/**
-	 * An event priority slightly lower than normal.
-	 */
-	LOW,
-
-	/**
-	 * The default event priority.
-	 */
-	NORMAL,
+	HIGHEST,
 
 	/**
 	 * An event priority slightly higher than normal.
@@ -29,8 +19,18 @@ public enum EventPriority {
 	HIGH,
 
 	/**
-	 * The highest event priority.
+	 * The default event priority.
 	 */
-	HIGHEST;
+	NORMAL,
+
+	/**
+	 * An event priority slightly lower than normal.
+	 */
+	LOW,
+
+	/**
+	 * The lowest event priority.
+	 */
+	LOWEST;
 
 }

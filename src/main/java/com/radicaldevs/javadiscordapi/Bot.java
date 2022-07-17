@@ -1,9 +1,13 @@
 package com.radicaldevs.javadiscordapi;
 
+import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
 
 import com.radicaldevs.javadiscordapi.command.CommandManager;
+import com.radicaldevs.javadiscordapi.event.ListenerManager;
+import com.radicaldevs.javadiscordapi.impl.InternalCommandListener;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -23,6 +27,11 @@ public abstract class Bot {
 	private final String token;
 
 	/**
+	 * The bot's command prefixes.
+	 */
+	private List<String> commandPrefixes;
+	
+	/**
 	 * The discord API instance.
 	 */
 	private JDA api;
@@ -33,15 +42,38 @@ public abstract class Bot {
 	private CommandManager commandManager;
 
 	/**
+	 * The bot's listener manager.
+	 */
+	private ListenerManager listenerManager;
+
+	/**
 	 * Construct a new bot.
 	 * 
 	 * @param token The bot's token.
+	 * @param prefixes The bot's command prefixes.
 	 */
-	public Bot(@Nonnull String token) {
+	public Bot(@Nonnull String token, List<String> prefixes) {
 		this.token = token;
+		this.commandPrefixes = prefixes;
 		this.commandManager = new CommandManager();
+		this.listenerManager = new ListenerManager();
+		
+		this.listenerManager.addListener(new InternalCommandListener(this.commandPrefixes));
 	}
 
+	/**
+	 * The bot's command prefixes.
+	 * 
+	 * <p>
+	 * Note: Modifications to this list will affect the command prefixes.
+	 * </p>
+	 * 
+	 * @return The command prefixes.
+	 */
+	public List<String> getCommandPrefixes() {
+		return this.commandPrefixes;
+	}
+	
 	/**
 	 * Get the api instance.
 	 * 
@@ -62,6 +94,15 @@ public abstract class Bot {
 	 */
 	public CommandManager getCommandManager() {
 		return this.commandManager;
+	}
+
+	/**
+	 * Get the bot's event manager.
+	 * 
+	 * @return The bot's event manager.
+	 */
+	public ListenerManager getEventManager() {
+		return this.listenerManager;
 	}
 
 	/**
