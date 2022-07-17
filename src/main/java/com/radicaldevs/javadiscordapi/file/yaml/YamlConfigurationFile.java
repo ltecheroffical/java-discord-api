@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import org.simpleyaml.configuration.file.YamlFile;
 import org.simpleyaml.exceptions.InvalidConfigurationException;
 
-import com.radicaldevs.vortalbot.utils.file.ConfigurationFile;
+import com.radicaldevs.javadiscordapi.file.ConfigurationFile;
 
 /**
  * 

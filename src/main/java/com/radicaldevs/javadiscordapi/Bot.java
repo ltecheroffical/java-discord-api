@@ -8,6 +8,7 @@ import javax.security.auth.login.LoginException;
 import com.radicaldevs.javadiscordapi.command.CommandManager;
 import com.radicaldevs.javadiscordapi.event.ListenerManager;
 import com.radicaldevs.javadiscordapi.impl.InternalCommandListener;
+import com.radicaldevs.javadiscordapi.impl.InternalEventHandler;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -47,6 +48,16 @@ public abstract class Bot {
 	private ListenerManager listenerManager;
 
 	/**
+	 * The bot's internal command listener.
+	 */
+	private InternalCommandListener internalCommandListener;
+	
+	/**
+	 * Tht bot's internal event handler.
+	 */
+	private InternalEventHandler internalEventHandler;
+	
+	/**
 	 * Construct a new bot.
 	 * 
 	 * @param token The bot's token.
@@ -58,7 +69,9 @@ public abstract class Bot {
 		this.commandManager = new CommandManager();
 		this.listenerManager = new ListenerManager();
 		
-		this.listenerManager.addListener(new InternalCommandListener(this.commandPrefixes));
+		this.internalCommandListener = new InternalCommandListener(this.commandPrefixes);
+		this.listenerManager.addListener(this.internalCommandListener);
+		this.internalEventHandler = new InternalEventHandler(this.listenerManager);
 	}
 
 	/**
@@ -119,6 +132,7 @@ public abstract class Bot {
 			throw new IllegalStateException("The bot is already running");
 
 		JDABuilder builder = JDABuilder.createDefault(this.token);
+		builder.addEventListeners(this.internalEventHandler);
 		builder.disableCache(CacheFlag.STICKER, CacheFlag.EMOJI, CacheFlag.MEMBER_OVERRIDES);
 		builder.setBulkDeleteSplittingEnabled(false);
 
