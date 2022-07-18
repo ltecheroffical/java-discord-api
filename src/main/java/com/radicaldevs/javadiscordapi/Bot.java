@@ -175,7 +175,7 @@ public class Bot {
 		try {
 			Files.walk(this.getPluginDirectory().toPath(), 1).filter(file -> file.toString().endsWith(".jar"))
 					.forEach(jar -> {
-						Plugin plugin = Utils.loadPlugin(jar.toString());
+						Plugin plugin = Utils.loadPlugin(jar.toString(), this);
 
 						if (plugin == null)
 							return;

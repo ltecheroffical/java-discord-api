@@ -2,6 +2,8 @@ package com.radicaldevs.javadiscordapi.plugin;
 
 import java.io.File;
 
+import com.radicaldevs.javadiscordapi.Bot;
+
 /**
  * A generic plugin class. Extend this class in classes you wish to make
  * plugins.
@@ -10,6 +12,11 @@ import java.io.File;
  * @since 0.0.6
  */
 public abstract class Plugin {
+
+	/**
+	 * The bot the plugin is bound to.
+	 */
+	private Bot bot;
 
 	/**
 	 * The name of the plugin.
@@ -35,6 +42,15 @@ public abstract class Plugin {
 	 * The plugin's directory.
 	 */
 	private File directory;
+
+	/**
+	 * Get the bot the plugin is bound to.
+	 * 
+	 * @return The bot the plugin is bound to.
+	 */
+	public Bot getBot() {
+		return this.bot;
+	}
 
 	/**
 	 * Get the name of the plugin.

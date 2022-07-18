@@ -15,6 +15,7 @@ import java.util.zip.ZipEntry;
 
 import org.simpleyaml.configuration.file.YamlConfiguration;
 
+import com.radicaldevs.javadiscordapi.Bot;
 import com.radicaldevs.javadiscordapi.plugin.Plugin;
 
 /**
@@ -61,9 +62,10 @@ public final class Utils {
 	 * Load a plugin dynamically.
 	 * 
 	 * @param rawJar The raw jar file to load.
+	 * @param bot The bot the plugin is bound to.
 	 * @return The plugin instance if it was loaded sucessfully, otherwise null.
 	 */
-	public static Plugin loadPlugin(String rawJar) {
+	public static Plugin loadPlugin(String rawJar, Bot bot) {
 		try {
 			// Load the jar file.
 			File jarFile = new File(rawJar);
@@ -114,13 +116,19 @@ public final class Utils {
 				return null;
 			}
 
-			// Case the plugin.
+			// Cast the plugin.
 			Plugin plugin = (Plugin) pl;
 			File pluginDir = new File("./plugins/" + name);
 
 			if (!pluginDir.exists())
 				pluginDir.mkdir();
 
+			// Inject the bot the plugin is bound to.
+			Field botField = pluginClass.getSuperclass().getDeclaredField("bot");
+			botField.setAccessible(true);
+			botField.set(plugin, bot);
+			botField.setAccessible(false);
+			
 			// Inject the plugin name.
 			Field nameField = pluginClass.getSuperclass().getDeclaredField("name");
 			nameField.setAccessible(true);
