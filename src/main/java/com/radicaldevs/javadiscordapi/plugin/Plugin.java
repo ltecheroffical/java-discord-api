@@ -1,5 +1,7 @@
 package com.radicaldevs.javadiscordapi.plugin;
 
+import java.io.File;
+
 /**
  * A generic plugin class. Extend this class in classes you wish to make
  * plugins.
@@ -28,6 +30,11 @@ public abstract class Plugin {
 	 * The author of the plugin.
 	 */
 	private String author;
+
+	/**
+	 * The plugin's directory.
+	 */
+	private File directory;
 
 	/**
 	 * Get the name of the plugin.
@@ -63,6 +70,15 @@ public abstract class Plugin {
 	 */
 	public String getAuthor() {
 		return this.author;
+	}
+
+	/**
+	 * Get the plugin's directory.
+	 * 
+	 * @return The plugin's directory.
+	 */
+	public File getDirectory() {
+		return this.directory;
 	}
 
 	/**
