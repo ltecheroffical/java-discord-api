@@ -7,6 +7,7 @@ import com.radicaldevs.javadiscordapi.command.Command;
 import com.radicaldevs.javadiscordapi.command.CommandManager;
 import com.radicaldevs.javadiscordapi.event.Listener;
 import com.radicaldevs.javadiscordapi.event.ListenerManager;
+import com.radicaldevs.javadiscordapi.utils.Utils;
 
 /**
  * A plugin management utility.
@@ -65,6 +66,19 @@ public class PluginManager {
 			throw new PluginNameInUseException("A plugin is already registered with the name " + plugin.getName());
 
 		this.registeredPlugins.add(plugin);
+		
+		String successMessage = "Loaded " + plugin.getName();
+
+		if (plugin.getVersion() != null)
+			successMessage += " v" + plugin.getVersion();
+
+		if (plugin.getAuthor() != null)
+			successMessage += " by " + plugin.getAuthor();
+
+		successMessage += ".";
+
+		Utils.info(successMessage);
+		
 		plugin.onEnable();
 	}
 
@@ -143,6 +157,7 @@ public class PluginManager {
 	 */
 	public synchronized void removePlugin(Plugin plugin) {
 		plugin.onDisable();
+		Utils.info("Unloaded " + plugin.getName() + ".");
 		this.registeredPlugins.remove(plugin);
 	}
 

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
+import com.radicaldevs.javadiscordapi.utils.Utils;
+
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
@@ -79,6 +81,7 @@ public abstract class Command {
 
 		// If no arguments were specified, send it to the command handler.
 		if (args.length == 0) {
+			Utils.info(member.getEffectiveName() + "(" + member.getIdLong() + ") used " + rawMessage.getContentRaw());
 			this.onCommand(guild, member, channel, rawMessage, args);
 			return;
 		}
@@ -89,14 +92,16 @@ public abstract class Command {
 
 			// Check if the subcommand name matches.
 			if (sub.getName().equalsIgnoreCase(args[0])) {
-				sub.onCommand(guild, member, channel, rawMessage, Arrays.copyOfRange(args, 1, args.length));
+				Utils.info(member.getEffectiveName() + "(" + member.getIdLong() + ") used " + rawMessage.getContentRaw());
+				sub.internalCommandHandler(guild, member, channel, rawMessage, Arrays.copyOfRange(args, 1, args.length));
 				return;
 			}
 
 			// Check if the subcommand aliases match.
 			for (String alias : sub.aliases) {
 				if (alias.equalsIgnoreCase(args[0])) {
-					sub.onCommand(guild, member, channel, rawMessage, Arrays.copyOfRange(args, 1, args.length));
+					Utils.info(member.getEffectiveName() + "(" + member.getIdLong() + ") used " + rawMessage.getContentRaw());
+					sub.internalCommandHandler(guild, member, channel, rawMessage, Arrays.copyOfRange(args, 1, args.length));
 					return;
 				}
 			}
@@ -104,6 +109,7 @@ public abstract class Command {
 		}
 
 		// If none of the subcommands matched the arguments.
+		Utils.info(member.getEffectiveName() + "(" + member.getIdLong() + ") used " + rawMessage.getContentRaw());
 		this.onCommand(guild, member, channel, rawMessage, args);
 	}
 

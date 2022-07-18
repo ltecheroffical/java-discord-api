@@ -8,14 +8,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
 import org.simpleyaml.configuration.file.YamlConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.radicaldevs.javadiscordapi.Bot;
 import com.radicaldevs.javadiscordapi.plugin.Plugin;
 
 /**
@@ -24,13 +23,40 @@ import com.radicaldevs.javadiscordapi.plugin.Plugin;
  * @author Myles Deslippe
  * @since 0.0.6
  */
-public final class Utilities {
+public final class Utils {
 
 	/**
-	 * The bot's logger.
+	 * The logger's time formatter.
 	 */
-	private static final Logger logger = LoggerFactory.getLogger(Bot.class);
+	private final static SimpleDateFormat timeFormatter = new SimpleDateFormat("[yyyy-MM-dd HH:mm:ss]");
 
+	/**
+	 * Log a message to the console.
+	 * 
+	 * @param message The message to log.
+	 */
+	public static void info(Object message) {
+		System.out.println(timeFormatter.format(Calendar.getInstance().getTime()) + " INFO >> " + String.valueOf(message));
+	}
+
+	/**
+	 * Log a warning to the console.
+	 * 
+	 * @param message The message to log.
+	 */
+	public static void warn(Object message) {
+		System.out.println(timeFormatter.format(Calendar.getInstance().getTime()) + " WARNING >> " + String.valueOf(message));
+	}
+
+	/**
+	 * Lod an error to the console.
+	 * 
+	 * @param message The error to log.
+	 */
+	public static void error(Object message) {
+		System.out.println(timeFormatter.format(Calendar.getInstance().getTime()) + " ERROR >> " + String.valueOf(message));
+	}
+	
 	/**
 	 * Load a plugin dynamically.
 	 * 
@@ -50,7 +76,7 @@ public final class Utilities {
 			// If the plugin.yml file could not be found.
 			if (pluginYaml == null) {
 				jar.close();
-				logger.error("Could not load " + jarFile.getName() + ", plugin.yml not found.");
+				Utils.error("Could not load " + jarFile.getName() + ", plugin.yml not found.");
 				return null;
 			}
 
@@ -62,13 +88,13 @@ public final class Utilities {
 
 			// If the main class was not specified.
 			if ((main = config.getString("main")) == null) {
-				logger.error("Could not load " + jarFile.getName() + ", main class not specified.");
+				Utils.error("Could not load " + jarFile.getName() + ", main class not specified.");
 				return null;
 			}
 
 			// If the name of the plugin was not specified.
 			if ((name = config.getString("name")) == null) {
-				logger.error("Could not load " + jarFile.getName() + ", plugin name not specified.");
+				Utils.error("Could not load " + jarFile.getName() + ", plugin name not specified.");
 				return null;
 			}
 
@@ -84,7 +110,7 @@ public final class Utilities {
 
 			// If the main class does not extend Plugin.
 			if (!(pl instanceof Plugin)) {
-				logger.error("Could not load " + jarFile.getName() + ", the main class does not extend Plugin.");
+				Utils.error("Could not load " + jarFile.getName() + ", the main class does not extend Plugin.");
 				return null;
 			}
 
@@ -128,13 +154,13 @@ public final class Utilities {
 			return plugin;
 
 		} catch (IOException e) {
-			logger.error("Could not load " + rawJar + ", " + e.getMessage());
+			Utils.error("Could not load " + rawJar + ", " + e.getMessage());
 		} catch (SecurityException | IllegalAccessException | IllegalArgumentException e) {
-			logger.error("Could not load " + rawJar + ", could not access the main class");
+			Utils.error("Could not load " + rawJar + ", could not access the main class");
 		} catch (ClassNotFoundException | InstantiationException e) {
-			logger.error("Could not load " + rawJar + ", main class not found.");
+			Utils.error("Could not load " + rawJar + ", main class not found.");
 		} catch (InvocationTargetException | NoSuchMethodException e) {
-			logger.error("Could not load " + rawJar + ", invalid main class.");
+			Utils.error("Could not load " + rawJar + ", invalid main class.");
 		} catch (NoSuchFieldException e) {
 			e.printStackTrace();
 		}
