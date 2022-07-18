@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-import net.dv8tion.jda.api.entities.Channel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 
 /**
  * An abstract command class.
@@ -70,7 +70,7 @@ public abstract class Command {
 	 * @param rawMessage The raw command.
 	 * @param args       Arguments passed in with the command.
 	 */
-	public void internalCommandHandler(Guild guild, Member member, Channel channel, Message rawMessage, String[] args) {
+	public void internalCommandHandler(Guild guild, Member member, MessageChannel channel, Message rawMessage, String[] args) {
 		// If the member does not have permission to use the command.
 		if (!permissionCheck.test(member)) {
 			this.onPermissionDenied(guild, member, channel, rawMessage, args);
@@ -79,7 +79,7 @@ public abstract class Command {
 
 		// If no arguments were specified, send it to the command handler.
 		if (args.length == 0) {
-			this.internalCommandHandler(guild, member, channel, rawMessage, args);
+			this.onCommand(guild, member, channel, rawMessage, args);
 			return;
 		}
 
@@ -89,14 +89,14 @@ public abstract class Command {
 
 			// Check if the subcommand name matches.
 			if (sub.getName().equalsIgnoreCase(args[0])) {
-				sub.internalCommandHandler(guild, member, channel, rawMessage, Arrays.copyOfRange(args, 1, args.length));
+				sub.onCommand(guild, member, channel, rawMessage, Arrays.copyOfRange(args, 1, args.length));
 				return;
 			}
 
 			// Check if the subcommand aliases match.
 			for (String alias : sub.aliases) {
 				if (alias.equalsIgnoreCase(args[0])) {
-					sub.internalCommandHandler(guild, member, channel, rawMessage, Arrays.copyOfRange(args, 1, args.length));
+					sub.onCommand(guild, member, channel, rawMessage, Arrays.copyOfRange(args, 1, args.length));
 					return;
 				}
 			}
@@ -104,7 +104,7 @@ public abstract class Command {
 		}
 
 		// If none of the subcommands matched the arguments.
-		this.internalCommandHandler(guild, member, channel, rawMessage, args);
+		this.onCommand(guild, member, channel, rawMessage, args);
 	}
 
 	/**
@@ -117,7 +117,7 @@ public abstract class Command {
 	 * @param rawMessage The raw command.
 	 * @param args       Arguments passed in with the command.
 	 */
-	public abstract boolean onCommand(Guild guild, Member member, Channel channel, Message rawMessage, String[] args);
+	public abstract boolean onCommand(Guild guild, Member member, MessageChannel channel, Message rawMessage, String[] args);
 
 	/**
 	 * The method that will be invoked when the user executes a command, is not
@@ -129,7 +129,7 @@ public abstract class Command {
 	 * @param rawMessage The raw command.
 	 * @param args       Arguments passed in with the command.
 	 */
-	public abstract boolean onPermissionDenied(Guild guild, Member member, Channel channel, Message rawMessage, String[] args);
+	public abstract boolean onPermissionDenied(Guild guild, Member member, MessageChannel channel, Message rawMessage, String[] args);
 
 	/**
 	 * Get the name of the command.
@@ -217,10 +217,10 @@ public abstract class Command {
 		Command that = (Command) obj;
 
 		return this.name.equals(that.name) 
-				&& this.description.equals(that.description)
-				&& this.aliases.equals(that.aliases) 
-				&& this.permissionCheck.equals(that.permissionCheck)
-				&& this.subCommands.equals(that.subCommands);
+			&& this.description.equals(that.description)
+			&& this.aliases.equals(that.aliases) 
+			&& this.permissionCheck.equals(that.permissionCheck)
+			&& this.subCommands.equals(that.subCommands);
 	}
 
 }

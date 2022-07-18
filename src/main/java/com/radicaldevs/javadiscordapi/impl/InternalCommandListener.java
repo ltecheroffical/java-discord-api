@@ -35,7 +35,7 @@ public class InternalCommandListener implements Listener {
 	 * Construct an internal command listener.
 	 * 
 	 * @param prefixes Prefixes that trigger the command listener.
-	 * @param The command manager whose commands will be listened for.
+	 * @param The      command manager whose commands will be listened for.
 	 */
 	public InternalCommandListener(List<String> prefixes, CommandManager commandManager) {
 		this.prefixes = prefixes;
@@ -50,7 +50,7 @@ public class InternalCommandListener implements Listener {
 		// Ensure the message was a command.
 		boolean isCmd = false;
 		String message = event.getMessage().getContentRaw();
-		
+
 		for (String prefix : this.prefixes) {
 			if (message.startsWith(prefix.toLowerCase())) {
 				message = message.substring(prefix.length());
@@ -58,12 +58,12 @@ public class InternalCommandListener implements Listener {
 				break;
 			}
 		}
-		
+
 		String[] messageSplit = message.split(" ");
-		
+
 		if (!isCmd)
 			return;
-		
+
 		// Loop through all the registered commands, if they match execute them.
 		for (Command command : this.commandManager.getCommands()) {
 			// Check if the command name matches.
@@ -71,21 +71,21 @@ public class InternalCommandListener implements Listener {
 				command.internalCommandHandler(
 					event.getGuild(), 
 					event.getMember(), 
-					event.getChannel(), 
-					event.getMessage(),
+					event.getChannel(),
+					event.getMessage(), 
 					Arrays.copyOfRange(messageSplit, 1, messageSplit.length)
 				);
 				continue;
 			}
 
 			// Check if one of the command's aliases match.
-			for (String aliases : command.getAliases()) {
-				if (aliases.equals(messageSplit[0])) {
+			for (String alias : command.getAliases()) {
+				if (alias.equals(messageSplit[0])) {
 					command.internalCommandHandler(
 						event.getGuild(), 
 						event.getMember(), 
-						event.getChannel(), 
-						event.getMessage(),
+						event.getChannel(),
+						event.getMessage(), 
 						Arrays.copyOfRange(messageSplit, 1, messageSplit.length)
 					);
 					break;

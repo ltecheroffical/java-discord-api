@@ -7,7 +7,7 @@ package com.radicaldevs.javadiscordapi.event;
  * @since 0.0.2
  */
 public enum EventPriority {
-	
+
 	/**
 	 * The highest event priority.
 	 */

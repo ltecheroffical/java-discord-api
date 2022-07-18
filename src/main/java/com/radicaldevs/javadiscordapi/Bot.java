@@ -31,7 +31,7 @@ public abstract class Bot {
 	 * The bot's command prefixes.
 	 */
 	private List<String> commandPrefixes;
-	
+
 	/**
 	 * The discord API instance.
 	 */
@@ -51,16 +51,16 @@ public abstract class Bot {
 	 * The bot's internal command listener.
 	 */
 	private InternalCommandListener internalCommandListener;
-	
+
 	/**
 	 * Tht bot's internal event handler.
 	 */
 	private InternalEventHandler internalEventHandler;
-	
+
 	/**
 	 * Construct a new bot.
 	 * 
-	 * @param token The bot's token.
+	 * @param token    The bot's token.
 	 * @param prefixes The bot's command prefixes.
 	 */
 	public Bot(@Nonnull String token, List<String> prefixes) {
@@ -68,10 +68,11 @@ public abstract class Bot {
 		this.commandPrefixes = prefixes;
 		this.commandManager = new CommandManager();
 		this.listenerManager = new ListenerManager();
-		
+
 		this.internalCommandListener = new InternalCommandListener(this.commandPrefixes, this.commandManager);
-		this.listenerManager.addListener(this.internalCommandListener);
 		this.internalEventHandler = new InternalEventHandler(this.listenerManager);
+
+		this.listenerManager.addListener(this.internalCommandListener);
 	}
 
 	/**
@@ -86,7 +87,7 @@ public abstract class Bot {
 	public List<String> getCommandPrefixes() {
 		return this.commandPrefixes;
 	}
-	
+
 	/**
 	 * Get the api instance.
 	 * 

@@ -51,7 +51,7 @@ public class InternalEventHandler implements EventListener {
 				if (method.getParameterCount() == 0)
 					continue;
 
-				if (method.getDeclaredAnnotation(EventHandler.class) != null && genericClass.toString() .equals(method.getParameters()[0].getParameterizedType().toString())) {
+				if (method.getDeclaredAnnotation(EventHandler.class) != null && genericClass.toString().equals(method.getParameters()[0].getParameterizedType().toString())) {
 					switch (method.getDeclaredAnnotation(EventHandler.class).priority()) {
 					case HIGHEST:
 						highestPriority.put(method, listener);
@@ -92,13 +92,12 @@ public class InternalEventHandler implements EventListener {
 		for (Entry<Method, Listener> entry : map.entrySet()) {
 			Runnable runnable = () -> {
 				try {
-						entry.getKey().invoke(entry.getValue(), event);
+					entry.getKey().invoke(entry.getValue(), event);
 				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					System.out.println(e.getMessage());
 					e.printStackTrace();
 				}
 			};
-	
+
 			runnable.run();
 		}
 	}
