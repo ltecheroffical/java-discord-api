@@ -2,8 +2,8 @@ package com.radicaldevs.javadiscordapi.impl;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map.Entry;
 
 import com.radicaldevs.javadiscordapi.event.EventHandler;
 import com.radicaldevs.javadiscordapi.event.Listener;
@@ -37,77 +37,70 @@ public class InternalEventHandler implements EventListener {
 
 	@Override
 	public void onEvent(GenericEvent event) {
-		String genericType = event.getClass().getName();
 		Class<?> genericClass = event.getClass();
-		
+
 		// Seperate the handlers based on their priority.
-		List<Method> highestPriority = new ArrayList<Method>();
-		List<Method> highPriority = new ArrayList<Method>();
-		List<Method> normalPriority = new ArrayList<Method>();
-		List<Method> lowPriority = new ArrayList<Method>();
-		List<Method> lowestPriority = new ArrayList<Method>();
-		
+		HashMap<Method, Listener> highestPriority = new HashMap<Method, Listener>();
+		HashMap<Method, Listener> highPriority = new HashMap<Method, Listener>();
+		HashMap<Method, Listener> normalPriority = new HashMap<Method, Listener>();
+		HashMap<Method, Listener> lowPriority = new HashMap<Method, Listener>();
+		HashMap<Method, Listener> lowestPriority = new HashMap<Method, Listener>();
+
 		for (Listener listener : this.listenerManager.getListeners()) {
 			for (Method method : listener.getClass().getMethods()) {
 				if (method.getParameterCount() == 0)
 					continue;
-				
-				if (method.getDeclaredAnnotation(EventHandler.class) != null && method.getParameters()[0].getClass().getName().equals(genericType)) {
-					
+
+				if (method.getDeclaredAnnotation(EventHandler.class) != null && genericClass.toString() .equals(method.getParameters()[0].getParameterizedType().toString())) {
 					switch (method.getDeclaredAnnotation(EventHandler.class).priority()) {
 					case HIGHEST:
-						highestPriority.add(method);
+						highestPriority.put(method, listener);
 						break;
 					case HIGH:
-						highPriority.add(method);
+						highPriority.put(method, listener);
 						break;
 					case NORMAL:
-						normalPriority.add(method);
+						normalPriority.put(method, listener);
 						break;
 					case LOW:
-						lowPriority.add(method);
+						lowPriority.put(method, listener);
 						break;
 					case LOWEST:
-						lowestPriority.add(method);
+						lowestPriority.put(method, listener);
 						break;
-					}	
+					}
 				}
 			}
 		}
-		
+
 		// Run the event listeners.
-		for (Method method : highestPriority) 
-			this.run(method, genericClass, event);
-		
-		for (Method method : highPriority) 
-			this.run(method, genericClass, event);
-		
-		for (Method method : normalPriority) 
-			this.run(method, genericClass, event);
-		
-		for (Method method : highestPriority) 
-			this.run(method, genericClass, event);
-		
-		for (Method method : highestPriority) 
-			this.run(method, genericClass, event);
+		this.run(event, highestPriority);
+		this.run(event, highPriority);
+		this.run(event, normalPriority);
+		this.run(event, lowPriority);
+		this.run(event, lowestPriority);
 	}
 
 	/**
 	 * Run a {@link EventHandler}.
-	 * @param method The event handler method.
+	 * 
+	 * @param method       The event handler method.
 	 * @param genericClass The class type of the event.
-	 * @param event The event.
+	 * @param event        The event.
 	 */
-	private void run(Method method, Class<?> eventType, GenericEvent event) {
-		Runnable runnable = () ->  {
-			try {
-				method.invoke(null, eventType.cast(event));
-			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				e.printStackTrace();
-			}
-		};
-		
-		runnable.run();
-	}
+	private void run(GenericEvent event, HashMap<Method, Listener> map) {
+		for (Entry<Method, Listener> entry : map.entrySet()) {
+			Runnable runnable = () -> {
+				try {
+						entry.getKey().invoke(entry.getValue(), event);
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					System.out.println(e.getMessage());
+					e.printStackTrace();
+				}
+			};
 	
+			runnable.run();
+		}
+	}
+
 }

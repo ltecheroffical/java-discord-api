@@ -69,7 +69,7 @@ public abstract class Bot {
 		this.commandManager = new CommandManager();
 		this.listenerManager = new ListenerManager();
 		
-		this.internalCommandListener = new InternalCommandListener(this.commandPrefixes);
+		this.internalCommandListener = new InternalCommandListener(this.commandPrefixes, this.commandManager);
 		this.listenerManager.addListener(this.internalCommandListener);
 		this.internalEventHandler = new InternalEventHandler(this.listenerManager);
 	}

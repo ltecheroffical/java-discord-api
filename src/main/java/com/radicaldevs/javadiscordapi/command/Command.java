@@ -71,7 +71,6 @@ public abstract class Command {
 	 * @param args       Arguments passed in with the command.
 	 */
 	public void internalCommandHandler(Guild guild, Member member, Channel channel, Message rawMessage, String[] args) {
-
 		// If the member does not have permission to use the command.
 		if (!permissionCheck.test(member)) {
 			this.onPermissionDenied(guild, member, channel, rawMessage, args);
@@ -80,7 +79,7 @@ public abstract class Command {
 
 		// If no arguments were specified, send it to the command handler.
 		if (args.length == 0) {
-			this.onCommand(guild, member, channel, rawMessage, args);
+			this.internalCommandHandler(guild, member, channel, rawMessage, args);
 			return;
 		}
 
@@ -105,8 +104,7 @@ public abstract class Command {
 		}
 
 		// If none of the subcommands matched the arguments.
-		this.onCommand(guild, member, channel, rawMessage, args);
-
+		this.internalCommandHandler(guild, member, channel, rawMessage, args);
 	}
 
 	/**
